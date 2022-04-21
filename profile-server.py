@@ -2,6 +2,7 @@
 import subprocess
 import os
 import argparse
+import random
 
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
@@ -32,20 +33,26 @@ def parse():
         PORT = args.port
 
 def handle_profile(profile_server):
-    profile_pid()
-    run_perf_script()
+    output_file = profile_pid()
+    perf_script_output = run_perf_script(output_file)
+    stack_collapse_output = run_stack_collapse(perf_script_output)
+    svg_file = gen_flamegraph(stack_collapse_output)
 
     profile_server.send_response(200)
     profile_server.end_headers()
-    with open('out.perf', 'rb') as f:
+    with open(svg_file, 'rb') as f:
         profile_server.wfile.write(f.read())
 
 
+def handle_favicon(profile_server):
+    profile_server.send_response(404)
+    profile_server.end_headers()
+
+
 PATH_HANDLERS = {
-    '/debug/pprof/profile': handle_profile
+    '/debug/pprof/profile': handle_profile,
+    '/favicon.ico': handle_favicon
 }
-
-
 
 class ProfileServer(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -56,10 +63,11 @@ class ProfileServer(BaseHTTPRequestHandler):
 # Probably need to set kernel.perf_event_paranoid = -1
 # Preferably run with sudo
 def profile_pid():
-    subprocess.run(['rm', '-f', 'perf.data'])
-    frequency_hertz = 99
-    duration_secs = 10
-    cmd = ['perf', 'record', '-F', str(frequency_hertz), '-p', str(PID), '-g', '--',
+    output_file = f'perf-{random.randrange(10000)}.data'
+    subprocess.run(['rm', '-f', output_file])
+    frequency_hertz = 197
+    duration_secs = 5
+    cmd = ['perf', 'record', '-F', str(frequency_hertz), '-p', str(PID), '-g', '-o', output_file, '--',
         'sleep', str(duration_secs)]
 
     if as_sudo():
@@ -67,28 +75,51 @@ def profile_pid():
 
     print("Running command: " + ' '.join(cmd))
     subprocess.run(cmd)
+    return output_file
 
-def run_perf_script():
-    cmd = ['perf', 'script', '-i', 'perf.data']
+def run_stack_collapse(perf_script_output):
+    stack_collapse_output = f'out-{random.randrange(10000)}.folded'
+    cmd = [os.path.join(os.path.dirname(__file__), 'stackcollapse-perf.pl'), perf_script_output]
+    if as_sudo():
+        cmd = ['sudo'] + cmd
+    f = open(stack_collapse_output, "w")
+    print(f'About to run: {" ".join(cmd)}')
+    subprocess.run(cmd, stdout=f)
+    subprocess.run(['rm', '-f', perf_script_output])
+    return stack_collapse_output
+
+def gen_flamegraph(collapsed_stacks):
+    cmd = [os.path.join(os.path.dirname(__file__), 'flamegraph.pl'), collapsed_stacks]
+    if as_sudo():
+        cmd = ['sudo'] + cmd
+    output_file = f'kernel-{random.randrange(10000)}.svg'
+    f = open(output_file, "w")
+    print(f'About to run: {" ".join(cmd)}')
+    subprocess.run(cmd, stdout=f)
+    subprocess.run(['rm', '-f', collapsed_stacks])
+    return output_file
+
+def run_perf_script(perf_record_output):
+    perf_script_output = f'out-{random.randrange(10000)}.perf'
+    cmd = ['perf', 'script', '-i', perf_record_output]
     if as_sudo():
         cmd = ['sudo'] + cmd
 
-    subprocess.run(['rm', '-f', 'out.perf'])
     print("Running command: " + ' '.join(cmd))
-    with open('out.perf', 'w') as f:
+    with open(perf_script_output, 'w') as f:
         subprocess.run(cmd, stdout=f)
+    subprocess.run(['rm', '-f', perf_record_output])
+
+    return perf_script_output
 
 
 def get_mongod_pid():
-    cmd = ['ps', 'aux']
-
+    cmd = ['pgrep', 'mongod']
     if as_sudo():
         cmd = ['sudo'] + cmd
-
     ps_output = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE).stdout.splitlines()
     for line in ps_output:
-        if b'mongod' in line:
-            return int(line.split()[1].strip())
+        return int(line.strip())
     raise RuntimeError("Could not find mongod process")
 
 
