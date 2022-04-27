@@ -3,61 +3,36 @@ import subprocess
 import os
 import argparse
 import random
+import threading
+import flask
 
-from http.server import BaseHTTPRequestHandler, HTTPServer
-
-PORT = 8000
-PID = None
-
-def main():
-    global PID
-    parse()
-    # We probably could get stack traces for the entire system instead
-    PID = get_mongod_pid()
-    webServer = HTTPServer(('', PORT), ProfileServer)
-    try:
-        print(f"Starting server on port {PORT}")
-        webServer.serve_forever()
-    except KeyboardInterrupt:
-        pass
-
-    webServer.server_close()
-    print("Server stopped.")
+port = 8000
+pid = None
+host_name = "0.0.0.0"
+app = flask.Flask(__name__)
 
 def parse():
-    global PORT
+    global port
     parser = argparse.ArgumentParser(description='Sidecar profiler')
     parser.add_argument('--port', dest='port', type=int, nargs='?')
     args = parser.parse_args()
     if args.port is not None:
-        PORT = args.port
+        port = args.port
 
-def handle_profile(profile_server):
+@app.route("/flamegraph", methods=["GET"])
+def handle_profile():
     output_file = profile_pid()
     perf_script_output = run_perf_script(output_file)
     stack_collapse_output = run_stack_collapse(perf_script_output)
     svg_file = gen_flamegraph(stack_collapse_output)
 
-    profile_server.send_response(200)
-    profile_server.end_headers()
-    with open(svg_file, 'rb') as f:
-        profile_server.wfile.write(f.read())
+    return flask.send_file(svg_file)
 
-
-def handle_favicon(profile_server):
-    profile_server.send_response(404)
-    profile_server.end_headers()
-
-
-PATH_HANDLERS = {
-    '/debug/pprof/profile': handle_profile,
-    '/favicon.ico': handle_favicon
-}
-
-class ProfileServer(BaseHTTPRequestHandler):
-    def do_GET(self):
-        PATH_HANDLERS[self.path](self)
-
+@app.route("/favicon.ico", methods=["GET"])
+def handle_favicon():
+    resp = flask.Response()
+    resp.status = 404
+    return resp
 
 
 # Probably need to set kernel.perf_event_paranoid = -1
@@ -67,7 +42,7 @@ def profile_pid():
     subprocess.run(['rm', '-f', output_file])
     frequency_hertz = 197
     duration_secs = 5
-    cmd = ['perf', 'record', '-F', str(frequency_hertz), '-p', str(PID), '-g', '-o', output_file, '--',
+    cmd = ['perf', 'record', '-F', str(frequency_hertz), '-p', str(pid), '-g', '-o', output_file, '--',
         'sleep', str(duration_secs)]
 
     if as_sudo():
@@ -126,7 +101,13 @@ def get_mongod_pid():
 def as_sudo():
     return os.environ['USER'] == 'root'
 
+def setup():
+    global pid
+    pid = get_mongod_pid()
 
 
 if __name__ == "__main__":
-    main()
+    setup()
+    threading.Thread(target=lambda: app.run(host=host_name, port=port, debug=True, use_reloader=False)).start()
+    while True:
+        pass
