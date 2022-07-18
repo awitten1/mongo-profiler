@@ -8,10 +8,10 @@ const port = 3000;
 
 const uri = "mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority";
 const client = new MongoClient(uri);
+const db = client.db("flamegraphs");
+const flamegraphs = db.collection("flamegraphs");
 
 async function findOne(hostname, date) {
-    const db = client.db("flamegraphs");
-    const flamegraphs = db.collection("flamegraphs");
     const query = {hostname: hostname, date: date};
     const result = await flamegraphs.findOne(query);
     return result.flamegraph;
