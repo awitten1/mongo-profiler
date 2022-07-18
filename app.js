@@ -3,10 +3,11 @@
 const express = require('express');
 const app = express();
 const { MongoClient } = require("mongodb");
+require('dotenv').config();
 
 const port = 3000;
 
-const uri = "mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority";
+const uri = process.env.ATLAS_URI;
 const client = new MongoClient(uri);
 const db = client.db("flamegraphs");
 const flamegraphs = db.collection("flamegraphs");
