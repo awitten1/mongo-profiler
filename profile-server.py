@@ -25,7 +25,9 @@ def parse():
 def all_steps(frequency=FREQUENCY, duration=DURATION):
     output_file = profile_pid(frequency, duration)
     perf_script_output = run_perf_script(output_file)
+    delete_file(output_file)
     stack_collapse_output = run_stack_collapse(perf_script_output)
+    delete_file(perf_script_output)
     svg_file = gen_flamegraph(stack_collapse_output)
     return svg_file
 
@@ -80,6 +82,13 @@ def run_perf_script(perf_record_output):
 
     return perf_script_output
 
+def delete_file(file_name):
+    cmd = ['rm', '-f', file_name]
+    if as_sudo():
+        cmd = ['sudo'] + cmd
+    subprocess.run(cmd)
+
+
 
 def get_mongod_pid():
     cmd = ['pgrep', 'mongod']
@@ -108,6 +117,7 @@ if __name__ == "__main__":
         svg_file = all_steps()
         f = open(svg_file, 'rb')
         b = f.read()
+        delete_file(svg_file)
         f.close()
         post = {"hostname": socket.gethostname(),
             "flamegraph": b,
