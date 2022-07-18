@@ -1,6 +1,0 @@
-
-global:
-  scrape_interval: 15s
-
-targets:
-- localhost:8000
