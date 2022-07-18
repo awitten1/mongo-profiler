@@ -4,12 +4,15 @@ import os
 import argparse
 import random
 import threading
-import flask
+from pymongo import MongoClient
+import datetime
+import socket
 
 port = 8000
 pid = None
 host_name = "0.0.0.0"
-app = flask.Flask(__name__)
+FREQUENCY = 97
+DURATION = 5
 
 def parse():
     global port
@@ -19,31 +22,21 @@ def parse():
     if args.port is not None:
         port = args.port
 
-@app.route("/flamegraph", methods=["GET"])
-def handle_profile():
-    output_file = profile_pid()
+def all_steps(frequency=FREQUENCY, duration=DURATION):
+    output_file = profile_pid(frequency, duration)
     perf_script_output = run_perf_script(output_file)
     stack_collapse_output = run_stack_collapse(perf_script_output)
     svg_file = gen_flamegraph(stack_collapse_output)
-
-    return flask.send_file(svg_file)
-
-@app.route("/favicon.ico", methods=["GET"])
-def handle_favicon():
-    resp = flask.Response()
-    resp.status = 404
-    return resp
+    return svg_file
 
 
 # Probably need to set kernel.perf_event_paranoid = -1
 # Preferably run with sudo
-def profile_pid():
+def profile_pid(frequency, duration):
     output_file = f'perf-{random.randrange(10000)}.data'
     subprocess.run(['rm', '-f', output_file])
-    frequency_hertz = 197
-    duration_secs = 5
-    cmd = ['perf', 'record', '-F', str(frequency_hertz), '-p', str(pid), '-g', '-o', output_file, '--',
-        'sleep', str(duration_secs)]
+    cmd = ['perf', 'record', '-F', str(frequency), '-p', str(pid), '-g', '-o', output_file, '--',
+        'sleep', str(duration)]
 
     if as_sudo():
         cmd = ['sudo'] + cmd
@@ -108,6 +101,21 @@ def setup():
 
 if __name__ == "__main__":
     setup()
-    threading.Thread(target=lambda: app.run(host=host_name, port=port, debug=True, use_reloader=False)).start()
+
+    client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
     while True:
-        pass
+        print("In while true")
+        svg_file = all_steps()
+        f = open(svg_file, 'rb')
+        b = f.read()
+        f.close()
+        post = {"hostname": socket.gethostname(),
+            "flamegraph": b,
+            "date": datetime.datetime.utcnow()}
+        db = client['flamegraphs']
+        insert_id = db.flamegraphs.insert_one(post)
+        print(insert_id)
+        break
+
+
+
