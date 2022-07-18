@@ -118,7 +118,7 @@ if __name__ == "__main__":
     while True:
         print("In while true")
         svg_file = all_steps()
-        f = open(svg_file, 'rb')
+        f = open(svg_file, 'r')
         b = f.read()
         delete_file(svg_file)
         f.close()
