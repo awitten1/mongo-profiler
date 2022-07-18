@@ -7,6 +7,7 @@ import threading
 from pymongo import MongoClient
 import datetime
 import socket
+import time
 
 port = 8000
 pid = None
@@ -112,6 +113,8 @@ if __name__ == "__main__":
     setup()
 
     client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
+    db = client['flamegraphs']
+
     while True:
         print("In while true")
         svg_file = all_steps()
@@ -122,10 +125,9 @@ if __name__ == "__main__":
         post = {"hostname": socket.gethostname(),
             "flamegraph": b,
             "date": datetime.datetime.utcnow()}
-        db = client['flamegraphs']
         insert_id = db.flamegraphs.insert_one(post)
+        time.sleep(100)
         print(insert_id)
-        break
 
 
 

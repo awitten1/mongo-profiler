@@ -1,0 +1,22 @@
+{
+  "name": "mongo-continuous-profiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/awitten1/mongo-profiler.git"
+  },
+  "author": "Kruti Shah, Andrew Witten",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/awitten1/mongo-profiler/issues"
+  },
+  "homepage": "https://github.com/awitten1/mongo-profiler#readme",
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
