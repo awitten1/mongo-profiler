@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { setState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import './index.css';
@@ -19,10 +19,41 @@ class NodeTL extends React.Component {
         return <Sample ts={ts} />;
     }
 
-    render() {
-        const status = 'Next player: X';
+    constructor(props) {
+        super(props)
+        this.state = {hostnames: [], isLoaded: false}
+    }
 
-        return (
+    componentDidMount() {
+        axios.get("http://localhost:8000/hostnames", {
+            headers: {
+                'Access-Control-Allow-Origin': '*'
+            }
+        }).then((res)=>{
+            console.log(res);
+            console.log(res.data);
+            this.setState({hostnames: res.data.hostnames,  isLoaded: true});
+        })
+    }
+
+    render() {
+        const { hostnames, isLoaded } = this.state;
+        /*if (!isLoaded) {
+            return <div>Loading...</div>;
+        }*/
+        console.log(hostnames)
+        return hostnames.map((hostname) => <li>{hostname}</li>);
+        /*return (
+        <ul>
+        {
+          this.state.hostnames
+          .map(hostname =>
+            <li>{hostname.name}</li>
+          )
+        }
+      </ul>
+      );*/
+        /*return (
         <div>
             <div className="status">{status}</div>
             <div className="board-row">
@@ -41,7 +72,7 @@ class NodeTL extends React.Component {
             {this.renderSquare(8)}
             </div>
         </div>
-        );
+        );*/
     }
 }
 

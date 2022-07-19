@@ -2,6 +2,8 @@
 const express = require('express');
 const app = express();
 const { MongoClient } = require("mongodb");
+const cors = require("cors");
+
 require('dotenv').config();
 
 const port = 8000;
@@ -10,6 +12,8 @@ const uri = process.env.ATLAS_URI;
 const client = new MongoClient(uri);
 const db = client.db("flamegraphs");
 const flamegraphs = db.collection("flamegraphs");
+
+app.use(cors());
 
 async function findOne(hostname, date) {
     const query = {hostname: hostname, date: date};
@@ -51,6 +55,7 @@ app.get('/:hostname/timestamps', async function(req, res, next) {
 // Get all hostnames
 app.get('/hostnames', async function(_, res, next) {
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader("Access-Control-Allow-Origin", "*")
     findDistinct().then((hostnames) => res.send({hostnames: hostnames})).catch(next)
 })
 
