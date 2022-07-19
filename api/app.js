@@ -1,4 +1,3 @@
-// /hostname/date-time => flamegraph file
 
 const express = require('express');
 const app = express();
