@@ -1,8 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-//const axios = require('axios');
 
 import './index.css';
+const axios = require('axios');
 
 class Sample extends React.Component {
     render() {
