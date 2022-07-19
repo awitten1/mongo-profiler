@@ -4,7 +4,7 @@ const app = express();
 const { MongoClient } = require("mongodb");
 require('dotenv').config();
 
-const port = 3000;
+const port = 8000;
 
 const uri = process.env.ATLAS_URI;
 const client = new MongoClient(uri);
@@ -23,6 +23,7 @@ async function findDistinct() {
     return res
 }
 
+// Return flamegraph file
 app.get('/:hostname/flamegraph/:datetime', async function(req, res, next) {
     res.setHeader('Content-Type', 'image/svg+xml');
     findOne(req.params.hostname, new Date(req.params.datetime))
@@ -30,6 +31,7 @@ app.get('/:hostname/flamegraph/:datetime', async function(req, res, next) {
         .catch(next);
 })
 
+// Get last 10 timestamps for host hostname
 app.get('/:hostname/timestamps', async function(req, res, next) {
     const query = {hostname: req.params.hostname}
     const options = {projection: {date: 1}}
@@ -46,6 +48,7 @@ app.get('/:hostname/timestamps', async function(req, res, next) {
     res.send({timestamps: timestamps})
 });
 
+// Get all hostnames
 app.get('/hostnames', async function(_, res, next) {
     res.setHeader('Content-Type', 'application/json');
     findDistinct().then((hostnames) => res.send({hostnames: hostnames})).catch(next)
