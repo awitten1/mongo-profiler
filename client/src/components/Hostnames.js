@@ -47,7 +47,7 @@ class Hostnames extends Component {
     }*/
     return (<div><ul>{hostnames.map(
         (hostname) =>
-            <a href = 'http://localhost:3000/clickedonhostname' target =
+            <a href = {`http://localhost:3000/${hostname}`} target =
                  '_blank' rel = 'noreferrer'>
         <Button>{hostname}</Button>
         </a>)}</ul>
