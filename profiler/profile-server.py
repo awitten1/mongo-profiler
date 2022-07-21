@@ -118,9 +118,7 @@ if __name__ == "__main__":
 
     while True:
         print("In while true")
-        svg_file = None
         try:
-            nonlocal svg_file
             svg_file = all_steps()
         except:
             continue
