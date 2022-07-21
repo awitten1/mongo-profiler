@@ -66,7 +66,7 @@ def gen_flamegraph(collapsed_stacks):
     output_file = f'kernel-{random.randrange(10000)}.svg'
     f = open(output_file, "w")
     print(f'About to run: {" ".join(cmd)}')
-    subprocess.run(cmd, stdout=f)
+    subprocess.run(cmd, stdout=f, check=True)
     subprocess.run(['rm', '-f', collapsed_stacks])
     return output_file
 
@@ -118,7 +118,12 @@ if __name__ == "__main__":
 
     while True:
         print("In while true")
-        svg_file = all_steps()
+        svg_file = None
+        try:
+            nonlocal svg_file
+            svg_file = all_steps()
+        except:
+            continue
         f = open(svg_file, 'r')
         b = f.read()
         delete_file(svg_file)
