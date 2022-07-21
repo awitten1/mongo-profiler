@@ -128,6 +128,3 @@ if __name__ == "__main__":
         insert_id = db.flamegraphs.insert_one(post)
         time.sleep(100)
         print(insert_id)
-
-
-

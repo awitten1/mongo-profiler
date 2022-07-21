@@ -1,20 +1,31 @@
+import {Grid} from '@mui/material';
+import Paper from '@mui/material/Paper';
 import axios from 'axios';
 import React, {Component} from 'react';
+import {useEffect, useParams} from 'react-router-dom';
 import styled from 'styled-components';
 
+import Timestamps2 from './Timestamps2';
+
+const Item = styled(Paper)(() => ({
+                             backgroundColor: '#1A2027',
+                             textAlign: 'center',
+                           }));
+
 const Button = styled.button`
-  background-color: #3f51b5
+  background-color: #84BDA9;
   color: white;
-  padding: 5px 15px;
-  border-radius: 5px;
+  padding: 60px 20px;
+  border-radius: 100%;
   outline: 0;
   text-transform: uppercase;
-  margin: 10px 0px;
+  font-size: 16px;
+  margin: 10px 20px;
   cursor: pointer;
   box-shadow: 0px 2px 2px lightgray;
   transition: ease background-color 250ms;
   &:hover {
-    background-color: #283593;
+    background-color: #547067;
   }
   &:disabled {
     cursor: default;
@@ -22,37 +33,47 @@ const Button = styled.button`
   }
 `;
 
-class Hostnames extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {hostnames: [], isLoaded: false};
-  }
+const Hostnames =
+    () => {
+      let hostnameList = [];
+      const [post, setPost] = React.useState(null);
 
-  componentDidMount() {
-    axios
-        .get(
-            'http://localhost:8000/hostnames',
-            {headers: {'Access-Control-Allow-Origin': '*'}})
-        .then((res) => {
-          console.log(res);
-          console.log(res.data);
-          this.setState({hostnames: res.data.hostnames, isLoaded: true});
-        })
-  }
+      React.useEffect(() => {
+        axios.get('http://localhost:8000/hostnames').then((res) => {
+          setPost(res.data);
+        });
+      }, []);
 
-  render() {
-    const {hostnames, isLoaded} = this.state;
-    /*if (!isLoaded) {
-        return <div>Loading...</div>;
-    }*/
-    return (<div><ul>{hostnames.map(
-        (hostname) =>
-            <a href = {`http://localhost:3000/${hostname}`} target =
-                 '_blank' rel = 'noreferrer'>
-        <Button>{hostname}</Button>
-        </a>)}</ul>
-          </div>);
-  }
-}
+      if (!post) return null;
+
+      hostnameList = post.hostnames;
+
+      return (hostnameList.map(
+          (hostname) => (
+
+              <Grid container spacing = {1} rowSpacing = {1} columnSpacing = {
+                {
+                  xs: 1, sm: 2, md: 3
+                }
+              }>
+
+
+              <Grid item xs = {3} md = {4}>
+
+              <Item>
+              <a href = {`http://localhost:3000/${hostname}`} target =
+                   '_blank' rel = 'noreferrer'>
+              <Button>{hostname}</Button>
+                    </a>
+              </Item>
+
+              </Grid>
+
+              <Grid item xs = {8} md = {4}><Item><Timestamps2 hostname = {
+                hostname
+              } /></Item></Grid>
+        </Grid>)));
+    }
+
 
 export default Hostnames;
