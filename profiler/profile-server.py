@@ -50,7 +50,7 @@ def profile_pid(frequency, duration):
 
 def run_stack_collapse(perf_script_output):
     stack_collapse_output = f'out-{random.randrange(10000)}.folded'
-    cmd = [os.path.join(os.path.dirname(__file__), 'stackcollapse-perf.pl'), perf_script_output]
+    cmd = [os.path.join(str(pathlib.Path().resolve()), 'stackcollapse-perf.pl'), perf_script_output]
     if as_sudo():
         cmd = ['sudo'] + cmd
     f = open(stack_collapse_output, "w")
@@ -60,7 +60,7 @@ def run_stack_collapse(perf_script_output):
     return stack_collapse_output
 
 def gen_flamegraph(collapsed_stacks):
-    cmd = [os.path.join(os.path.dirname(__file__), 'flamegraph.pl'), collapsed_stacks]
+    cmd = [os.path.join(str(pathlib.Path().resolve()), 'flamegraph.pl'), collapsed_stacks]
     if as_sudo():
         cmd = ['sudo'] + cmd
     output_file = f'kernel-{random.randrange(10000)}.svg'
@@ -116,6 +116,7 @@ if __name__ == "__main__":
     #client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
     client = MongoClient(os.environ["ATLAS_URI"])
     db = client['flamegraphs']
+    print(f'filepath: {__file__}')
 
     while True:
         print("In while true")
