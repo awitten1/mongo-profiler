@@ -112,7 +112,8 @@ def setup():
 if __name__ == "__main__":
     setup()
 
-    client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
+    #client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
+    client = MongoClient(os.environ["ATLAS_URI"])
     db = client['flamegraphs']
 
     while True:
