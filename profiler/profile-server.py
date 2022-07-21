@@ -87,6 +87,7 @@ def delete_file(file_name):
     cmd = ['rm', '-f', file_name]
     if as_sudo():
         cmd = ['sudo'] + cmd
+    print(f'About to run {" ".join(cmd)}')
     subprocess.run(cmd)
 
 
