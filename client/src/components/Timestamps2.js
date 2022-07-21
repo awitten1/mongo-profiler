@@ -10,9 +10,9 @@ import styled from 'styled-components';
 
 
 const Button = styled.button`
-  background-color: #C4A484;
-  padding: 60px 15px;
-  border-radius: 100%;
+  background-color: #E8E7D5;
+  padding: 30px 10px;
+  border-radius: 5px;
   outline: 0;
   text-transform: uppercase;
   margin: 20px 50px;
@@ -21,7 +21,7 @@ const Button = styled.button`
   box-shadow: 0px 2px 2px gray;
   transition: ease background-color 250ms;
   &:hover {
-    background-color: #6F4E37;
+    background-color: #C1BEBC;
   }
   &:disabled {
     cursor: default;
