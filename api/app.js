@@ -39,7 +39,7 @@ app.get('/:hostname/flamegraph/:datetime', async function(req, res, next) {
 app.get('/:hostname/timestamps', async function(req, res, next) {
     const query = {hostname: req.params.hostname}
     const options = {projection: {date: 1}}
-    const cursor = flamegraphs.find(query, options).limit(10)
+    const cursor = flamegraphs.find(query, options).sort({"date": -1}).limit(10)
     const count = await cursor.count()
     console.log(`Found ${count} docs in handling req ${req.originalUrl}`);
     const timestamps = [];
