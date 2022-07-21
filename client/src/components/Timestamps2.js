@@ -8,6 +8,7 @@ import {useEffect, useParams} from 'react-router-dom';
 import Slider from 'react-slick';
 import styled from 'styled-components';
 
+
 const Button = styled.button`
   background-color: #C4A484;
   padding: 60px 15px;
@@ -28,19 +29,33 @@ const Button = styled.button`
   }
 `;
 
-export default function Timestamps2(props) {
-  function Arrow(props) {
-    let className = props.type === 'next' ? 'nextArrow' : 'prevArrow';
-    className += ' arrow';
-    const char = props.type === 'next' ? '>' : '<';
-        return (
-          <span className={className} onClick={props.onClick}>
-            {char}
-          </span>
-        );
-      }
+function SampleNextArrow(props) {
+  const {className, style, onClick} = props;
+  return (
+    <div
+      className={className}
+      style={
+    { background: 'black' }}
+      onClick={
+    onClick}
+    />
+  );
+}
 
-console.log(props)
+function SamplePrevArrow(props) {
+  const { className, style, onClick } = props;
+  return (
+    <div
+      className={className}
+      style={
+        { background: 'black' }}
+      onClick={onClick}
+    />
+  );
+}
+
+export default function Timestamps2(props) {
+  console.log(props)
   const hostname = props.hostname;
   let timestamps = [];
   console.log(hostname);
@@ -58,6 +73,16 @@ console.log(props)
   timestamps = post.timestamps;
   console.log(timestamps);
 
+  const settings = {
+    dots: true,
+    infinite: true,
+    slidesToShow: 4,
+    slidesToScroll: 4,
+    centerPadding: '100px',
+    nextArrow: <SampleNextArrow />,
+    prevArrow: <SamplePrevArrow />
+  };
+
 
   const renderSlides = () => timestamps.map(
       timestamp => (<div><h3><a href = {`http://localhost:8000/${
@@ -68,20 +93,7 @@ console.log(props)
  </a></h3>
       </div>));
 
-  return (
-    <div className='timestamps2'>
-      <Slider
-        nextArrow={<Arrow type='next' />
-  }
-        dots={false}
-        slidesToShow={4}
-        slidesToScroll={5}
-        autoplay={false}
-        autoplaySpeed={3000}
-        prevArrow={<Arrow type='prev' />}
-      >
-        {renderSlides()}
-      </Slider>
-    </div>
-  );
+  return (<div className = 'timestamps2'>
+          <Slider{...settings}>{renderSlides()}</Slider>
+    </div>);
 }
