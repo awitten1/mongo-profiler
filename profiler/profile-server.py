@@ -126,5 +126,4 @@ if __name__ == "__main__":
             "flamegraph": b,
             "date": datetime.datetime.utcnow()}
         insert_id = db.flamegraphs.insert_one(post)
-        time.sleep(100)
         print(insert_id)
