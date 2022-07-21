@@ -50,15 +50,14 @@ const Hostnames =
 
       return (hostnameList.map(
           (hostname) => (
-
-              <Grid container spacing = {1} rowSpacing = {1} columnSpacing = {
+              <div style = {
                 {
-                  xs: 1, sm: 2, md: 3
+                  height: '250px', width: '1400px'
                 }
-              }>
+              }><Grid container>
 
 
-              <Grid item xs = {3} md = {4}>
+              <Grid item xs = {3} sm = {7} md = {2}>
 
               <Item>
               <a href = {`http://localhost:3000/${hostname}`} target =
@@ -67,12 +66,19 @@ const Hostnames =
                     </a>
               </Item>
 
-              </Grid>
+              </Grid><div style = {
+                {
+                  height: '30px', width: '50px'
+                }
+              }>
+              </div>
 
-              <Grid item xs = {8} md = {8}><Item><Timestamps2 hostname = {
+              <Grid item xs = {3} sm = {2} md = {9}><Item>
+              <Timestamps2 hostname = {
                 hostname
-              } /></Item></Grid>
-        </Grid>)));
+              } />
+              </Item></Grid></Grid>
+        </div>)));
     }
 
 
