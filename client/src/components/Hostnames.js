@@ -69,7 +69,7 @@ const Hostnames =
 
               </Grid>
 
-              <Grid item xs = {8} md = {4}><Item><Timestamps2 hostname = {
+              <Grid item xs = {8} md = {8}><Item><Timestamps2 hostname = {
                 hostname
               } /></Item></Grid>
         </Grid>)));

@@ -9,7 +9,7 @@ class App extends Component {
     return (<div className = 'container'><BrowserRouter><Routes>
             <Route exact path = '/' element = {
 <Hostnames /> } />
-<Route exact path = '/:hostname' element = {<Timestamps2/>} />
+<Route exact path = '/:hostname' element = {<Timestamps/>} />
           </Routes></BrowserRouter>
       </div>);
   }

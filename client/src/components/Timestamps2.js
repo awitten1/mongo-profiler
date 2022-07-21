@@ -74,7 +74,7 @@ console.log(props)
         nextArrow={<Arrow type='next' />
   }
         dots={false}
-        slidesToShow={5}
+        slidesToShow={4}
         slidesToScroll={5}
         autoplay={false}
         autoplaySpeed={3000}
