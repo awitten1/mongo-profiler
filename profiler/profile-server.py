@@ -8,12 +8,23 @@ from pymongo import MongoClient
 import datetime
 import socket
 import time
+import pathlib
 
 port = 8000
 pid = None
 host_name = "0.0.0.0"
 FREQUENCY = 97
 DURATION = 5
+
+def get_perl_scripts():
+    delete_file("stackcollapse-perf.pl")
+    subprocess.run(['wget', 'https://raw.githubusercontent.com/brendangregg/FlameGraph/810687f180f3c4929b5d965f54817a5218c9d89b/stackcollapse-perf.pl'])
+    subprocess.run(['chmod', '+x', 'stackcollapse-perf.pl'])
+    delete_file("wget-log")
+    delete_file("flamegraph.pl")
+    subprocess.run(['wget', 'https://raw.githubusercontent.com/brendangregg/FlameGraph/810687f180f3c4929b5d965f54817a5218c9d89b/flamegraph.pl'])
+    subprocess.run(['chmod', '+x', 'flamegraph.pl'])
+    delete_file("wget-log")
 
 def parse():
     global port
@@ -50,7 +61,7 @@ def profile_pid(frequency, duration):
 
 def run_stack_collapse(perf_script_output):
     stack_collapse_output = f'out-{random.randrange(10000)}.folded'
-    cmd = [os.path.join(os.path.dirname(__file__), 'stackcollapse-perf.pl'), perf_script_output]
+    cmd = [os.path.join(str(pathlib.Path().resolve()), 'stackcollapse-perf.pl'), perf_script_output]
     if as_sudo():
         cmd = ['sudo'] + cmd
     f = open(stack_collapse_output, "w")
@@ -60,7 +71,7 @@ def run_stack_collapse(perf_script_output):
     return stack_collapse_output
 
 def gen_flamegraph(collapsed_stacks):
-    cmd = [os.path.join(os.path.dirname(__file__), 'flamegraph.pl'), collapsed_stacks]
+    cmd = [os.path.join(str(pathlib.Path().resolve()), 'flamegraph.pl'), collapsed_stacks]
     if as_sudo():
         cmd = ['sudo'] + cmd
     output_file = f'kernel-{random.randrange(10000)}.svg'
@@ -111,24 +122,33 @@ def setup():
 
 
 if __name__ == "__main__":
+    get_perl_scripts()
     setup()
 
     #client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
     client = MongoClient(os.environ["ATLAS_URI"])
     db = client['flamegraphs']
+    print(f'filepath: {__file__}')
 
     while True:
         print("In while true")
         try:
             svg_file = all_steps()
-        except:
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            print(e)
+            delete_file("*.perf")
+            delete_file("*.folded")
+            delete_file("*.data")
             continue
         f = open(svg_file, 'r')
         b = f.read()
-        delete_file(svg_file)
         f.close()
         post = {"hostname": socket.gethostname(),
             "flamegraph": b,
             "date": datetime.datetime.utcnow()}
+        delete_file(svg_file)
+
         insert_id = db.flamegraphs.insert_one(post)
         print(insert_id)
