@@ -16,6 +16,16 @@ host_name = "0.0.0.0"
 FREQUENCY = 97
 DURATION = 5
 
+def get_perl_scripts():
+    delete_file("stackcollapse-perf.pl")
+    subprocess.run(['wget', 'https://raw.githubusercontent.com/brendangregg/FlameGraph/810687f180f3c4929b5d965f54817a5218c9d89b/stackcollapse-perf.pl'])
+    subprocess.run(['chmod', '+x', 'stackcollapse-perf.pl'])
+    delete_file("wget-log")
+    delete_file("flamegraph.pl")
+    subprocess.run(['wget', 'https://raw.githubusercontent.com/brendangregg/FlameGraph/810687f180f3c4929b5d965f54817a5218c9d89b/flamegraph.pl'])
+    subprocess.run(['chmod', '+x', 'flamegraph.pl'])
+    delete_file("wget-log")
+
 def parse():
     global port
     parser = argparse.ArgumentParser(description='Sidecar profiler')
@@ -112,6 +122,7 @@ def setup():
 
 
 if __name__ == "__main__":
+    get_perl_scripts()
     setup()
 
     #client = MongoClient('mongodb+srv://skunkworks:skunkworks@cluster0.vqgeawv.mongodb.net/?retryWrites=true&w=majority')
@@ -123,14 +134,21 @@ if __name__ == "__main__":
         print("In while true")
         try:
             svg_file = all_steps()
-        except:
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            print(e)
+            delete_file("*.perf")
+            delete_file("*.folded")
+            delete_file("*.data")
             continue
         f = open(svg_file, 'r')
         b = f.read()
-        delete_file(svg_file)
         f.close()
         post = {"hostname": socket.gethostname(),
             "flamegraph": b,
             "date": datetime.datetime.utcnow()}
+        delete_file(svg_file)
+
         insert_id = db.flamegraphs.insert_one(post)
         print(insert_id)
