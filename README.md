@@ -38,4 +38,5 @@ Go to localhost:3000
 
 * Ability to toggle profiling (at different granularities)
 * Search bar for timestamps
+* Off-CPU profiling
 
