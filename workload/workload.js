@@ -1,7 +1,6 @@
 const { MongoClient } = require("mongodb");
 
-const uri =
-  "mongodb://ec2-3-87-193-147.compute-1.amazonaws.com,ec2-3-82-228-189.compute-1.amazonaws.com,ec2-18-208-167-109.compute-1.amazonaws.com/?replicaSet=rs0&retryWrites=true&writeConcern=majority";
+const uri = process.env.ATLAS_WORKLOAD_URI;
 
 const client = new MongoClient(uri);
 console.log("Getting client...")
