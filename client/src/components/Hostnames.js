@@ -106,6 +106,7 @@ const Hostnames =
         marginBottom: '50px'}}>MongoDB Continuous
 Profiler<
     /h1>
+    <div>
 
                   <h1 style={{
     textAlign: 'left', color: 'dark gray', fontSize: '30px',
@@ -123,7 +124,7 @@ Profiler<
         Timestamps<
             /h1>
 
-
+            </div>
 
     {renderHostnames()} < /div>);
     }
