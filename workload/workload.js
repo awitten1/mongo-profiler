@@ -1,7 +1,7 @@
 const { MongoClient } = require("mongodb");
 
 const uri =
-  "mongodb://workload:workloadPwd@ec2-3-87-193-147.compute-1.amazonaws.com,ec2-3-82-228-189.compute-1.amazonaws.com,ec2-18-208-167-109.compute-1.amazonaws.com?retryWrites=true&writeConcern=majority";
+  "mongodb://workload:workloadPwd@ec2-3-87-193-147.compute-1.amazonaws.com,ec2-3-82-228-189.compute-1.amazonaws.com,ec2-18-208-167-109.compute-1.amazonaws.com/?replicaSet=rs0&retryWrites=true&writeConcern=majority";
 
 const client = new MongoClient(uri);
 console.log("Getting client...")
@@ -16,13 +16,13 @@ async function run() {
         const foods = database.collection('foods')
 
         while (true) {
-        const doc = { name: "Neapolitan pizza", shape: "round" };
-        await foods.insertOne(doc);
-        const doc2 = { title: 'Back to the Future', year: 1985 }
-        await movies.insertOne(doc2)
+            const doc = { name: "Neapolitan pizza", shape: "round" };
+            await foods.insertOne(doc);
+            const doc2 = { title: 'Back to the Future', year: 1985 }
+            await movies.insertOne(doc2)
 
-        const query = { title: 'Back to the Future' };
-        const movie = await movies.findOne(query);
+            const query = { title: 'Back to the Future' };
+            const movie = await movies.findOne(query);
         }
     } finally {
         // Ensures that the client will close when you finish/error
