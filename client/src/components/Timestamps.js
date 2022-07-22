@@ -1,11 +1,11 @@
 import axios from 'axios';
 import React from 'react';
-import {useEffect, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import styled from 'styled-components';
 
 const Button = styled.button`
   background-color: #E8E7D5;
-  padding: 30px 10px;
+  padding: 40px 10px;
   border-radius: 5px;
   outline: 0;
   text-transform: uppercase;
@@ -41,13 +41,13 @@ const Timestamps = () => {
   console.log(timestamps);
 
   return (<div><h2 style={{
-    textAlign: 'center'}}>Profiles for {hostname}</h2> 
+    textAlign: 'center', color: '#E8E7D5'}}>Flamegraphs for {hostname}</h2> 
     <ul>{timestamps.map((timestamp) =>
      <a href = {`http://localhost:8000/${
     hostname}/flamegraph/${
     timestamp.date}`} target =
      '_blank' rel = 'noreferrer'>
-<Button>{timestamp.date}</Button>
+<Button>{new Date(timestamp.date).toString().slice(0,25)+ "(EST)"}</Button>
 </a>)}</ul>
 </div>
  );
