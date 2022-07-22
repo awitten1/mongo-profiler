@@ -1,6 +1,5 @@
 import {Grid} from '@mui/material';
 import Paper from '@mui/material/Paper';
-import {makeStyles} from '@mui/styles';
 import axios from 'axios';
 import React from 'react';
 import {Link} from 'react-router-dom';
@@ -50,24 +49,14 @@ const Hostnames =
       const nodeLabel = window.innerWidth / 10;
 
       hostnameList = post.hostnames;
-      const classes = makeStyles({
-        root: {
-          backgroundColor: 'blue',
-          paddingBottom: 20,
-          paddingRight: 16,
-          marginTop: 16,
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          maxWidth: 500
-        }
-      });
+
       const renderHostnames = () => hostnameList.map(
           (hostname) => (
               <div style = {
                 {
                   height: '230px', width: {window}
                 }
-              }><Grid className = {classes.root} container>
+              }><Grid container>
 
 
               <Grid xs = {3} sm = {7} md = {2}>
@@ -108,21 +97,9 @@ Profiler<
     /h1>
     <div>
 
-                  <h1 style={{
-    textAlign: 'left', color: 'dark gray', fontSize: '30px',
-        marginBottom: '10px',  float: 'left', marginLeft: '20px'
-    }
-}>Nodes</h1>
 
 
-    <h1 style = {
-      {
-    textAlign: 'right', color: 'dark gray', fontSize: '30px',
-        marginBottom: '10px', marginRight: '100px', float: 'right'
-      }
-    }>
-        Timestamps<
-            /h1>
+
 
             </div>
 
