@@ -1,6 +1,7 @@
 
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
+import './Timestamps2.css';
 
 import axios from 'axios';
 import React from 'react';
