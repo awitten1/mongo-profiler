@@ -47,12 +47,13 @@ const Hostnames =
       }, []);
 
       if (!post) return null;
+      const nodeLabel = window.innerWidth / 10;
 
       hostnameList = post.hostnames;
       const classes = makeStyles({
         root: {
           backgroundColor: 'blue',
-          paddingBottom: 16,
+          paddingBottom: 20,
           paddingRight: 16,
           marginTop: 16,
           marginLeft: 'auto',
@@ -64,7 +65,7 @@ const Hostnames =
           (hostname) => (
               <div style = {
                 {
-                  height: '200px', width: {window}
+                  height: '230px', width: {window}
                 }
               }><Grid className = {classes.root} container>
 
@@ -103,10 +104,28 @@ const Hostnames =
         <h1 style={{
     textAlign: 'center', color: '#E8E7D5', fontSize: '40px',
         marginBottom: '50px'}}>MongoDB Continuous
-                  Profiler</h1>
-        
-        {renderHostnames()}
-        </div>);
+Profiler<
+    /h1>
+
+                  <h1 style={{
+    textAlign: 'left', color: 'dark gray', fontSize: '30px',
+        marginBottom: '10px',  float: 'left', marginLeft: '20px'
+    }
+}>Nodes</h1>
+
+
+    <h1 style = {
+      {
+    textAlign: 'right', color: 'dark gray', fontSize: '30px',
+        marginBottom: '10px', marginRight: '100px', float: 'right'
+      }
+    }>
+        Timestamps<
+            /h1>
+
+
+
+    {renderHostnames()} < /div>);
     }
 
 

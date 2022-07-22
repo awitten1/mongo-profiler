@@ -79,7 +79,6 @@ export default function Timestamps2(props) {
     centerPadding: '100px',
     nextArrow: <SampleNextArrow />,
     prevArrow: <SamplePrevArrow />,
-    variableWidth: true
   };
 
   timestamps.map(timestamp => {
