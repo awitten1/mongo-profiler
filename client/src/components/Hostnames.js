@@ -1,20 +1,21 @@
 import {Grid} from '@mui/material';
 import Paper from '@mui/material/Paper';
-import {textAlign} from '@mui/system';
+import {makeStyles} from '@mui/styles';
 import axios from 'axios';
-import React, {Component} from 'react';
-import {useEffect, useParams} from 'react-router-dom';
+import React from 'react';
+import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 
 import Timestamps2 from './Timestamps2';
 
 const Item = styled(Paper)(() => ({
-                             backgroundColor: '#1A2027',
+                             background: 'blue',
+                             backgroundColor: '#1A8727',
                              textAlign: 'center',
                            }));
 
 const Button = styled.button`
-  background-color: #4DB33D;
+  background-color: #C1BEBC;
   color: white;
   padding: 55px 15px;
   border-radius: 100%;
@@ -26,14 +27,13 @@ const Button = styled.button`
   box-shadow: 0px 2px 2px lightgray;
   transition: ease background-color 250ms;
   &:hover {
-    background-color: #3FA037;
+    background-color: #006400;
   }
   &:disabled {
     cursor: default;
     opacity: 0.7;
   }
 `;
-
 
 const Hostnames =
     () => {
@@ -47,25 +47,40 @@ const Hostnames =
       }, []);
 
       if (!post) return null;
+      const nodeLabel = window.innerWidth / 10;
 
       hostnameList = post.hostnames;
-
+      const classes = makeStyles({
+        root: {
+          backgroundColor: 'blue',
+          paddingBottom: 20,
+          paddingRight: 16,
+          marginTop: 16,
+          marginLeft: 'auto',
+          marginRight: 'auto',
+          maxWidth: 500
+        }
+      });
       const renderHostnames = () => hostnameList.map(
           (hostname) => (
               <div style = {
                 {
-                  height: '200px', width: '1400px'
+                  height: '230px', width: {window}
                 }
-              }><Grid container>
+              }><Grid className = {classes.root} container>
 
 
-              <Grid item xs = {3} sm = {7} md = {2}>
+              <Grid xs = {3} sm = {7} md = {2}>
 
-              <Item>
-              <a href = {`http://localhost:3000/${hostname}`} target =
-                   '_blank' rel = 'noreferrer'>
+              <Item sx = {
+                {
+                  backgroundColor: 'transparent', border: '2px solid black'
+                }
+              }>
+
+              <Link to = {`/${hostname}`}>
               <Button>{hostname}</Button>
-              </a>
+              </Link>
               </Item>
 
         </Grid><div style = {
@@ -75,19 +90,42 @@ const Hostnames =
               }>
               </div>
 
-        <Grid item xs = {3} sm = {2} md = {9}><Item>
+        <Grid xs = {3} sm = {2} md = {9}><Item sx = {
+                {
+                  backgroundColor: 'transparent',
+                  border: '2px solid black',
+                }}>
         <Timestamps2 hostname = {
           hostname
         } />
               </Item></Grid></Grid>
   </div>));
+      return (<div >
+        <h1 style={{
+    textAlign: 'center', color: '#E8E7D5', fontSize: '40px',
+        marginBottom: '50px'}}>MongoDB Continuous
+Profiler<
+    /h1>
 
-      return (<div>
-        <h2 style={{
-    textAlign: 'center'}}>MongoDB Continuous
-                  Profiler</h2>
-        {renderHostnames()}
-        </div>);
+                  <h1 style={{
+    textAlign: 'left', color: 'dark gray', fontSize: '30px',
+        marginBottom: '10px',  float: 'left', marginLeft: '20px'
+    }
+}>Nodes</h1>
+
+
+    <h1 style = {
+      {
+    textAlign: 'right', color: 'dark gray', fontSize: '30px',
+        marginBottom: '10px', marginRight: '100px', float: 'right'
+      }
+    }>
+        Timestamps<
+            /h1>
+
+
+
+    {renderHostnames()} < /div>);
     }
 
 
